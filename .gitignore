@@ -1,0 +1,16 @@
+# Compiler files
+cache/
+out/
+test/#test_erc20_new.#sol
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Dotenv file
+.env
+
+#custom
+localREADME.md
+frontend
