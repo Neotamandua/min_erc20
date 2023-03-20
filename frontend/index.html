@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" type="text/css" href="myStyle.css">
+<head>
+	<title>My Simple Website</title>
+	<script async src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js" integrity="sha512-Ls8WO4Esu7Jb9a92BfIp1Ftgl9t5Ncaa/6zKzpOkTGXW+dPcJcI4Yz2HR7cXY0YcfIAsL7R9Gqfbw8ERX8iYaA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script async src="./web3logic.js"></script>
+</head>
+<body>
+	<div class="header">
+	<span>Account: <span id="account"></span></span>
+	<span>Balance: <span id="balance"></span></span>
+	</div>
+
+	<label for="receiver">Receiver:</label>
+	<input type="text" id="receiver">
+
+	<label for="amount">Amount:</label>
+	<input type="number" id="amount">
+	<div id="err">
+	</div>
+    <div class="flex">
+    <button id="btn_connect">Connect Wallet</button>
+	<button id="btn_send">Send</button>
+	</div>
+</body>
+</html>
