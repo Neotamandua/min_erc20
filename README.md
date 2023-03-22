@@ -24,11 +24,10 @@ function min(uint256 x, uint256 y) public pure returns (uint256) {
 ```
 
 ## Implications
-- As the transfer function can't fail anymore for too large amounts, it needs to be communicated properly to an end user.
+- As the transfer function can't fail anymore for amounts exceeding the balance, it needs to be communicated properly to an end user.
 - Usability/Safety for the different transfer logic can be achieved again by a specific UI rather than the underlying contract source code.
-> E.g., input fields which show you that the amount >= your balance results always in the max value of your account. (check if true: Most wallets e.g., Metamask prevent you anyways to submit a transaction that fails due to a higher amount than your "balance[msg.sender]" currently has)
-
-- Proof of Concept can be found in the UI folder (WIP)
+> E.g., error notice or input fields which show you that the amount >= your balance results always in the max value of your account.
+- Example UI can be found in the frontend folder (WIP)
 
 ## Gas Usage
 ```bash
