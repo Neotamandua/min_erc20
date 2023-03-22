@@ -118,8 +118,10 @@ contract ERC20 is IERC20, IERC20Metadata {
     
     function transfer(address to, uint value) public override returns(bool) {
         uint256 amount = min(_balances[msg.sender], value);
-        _balances[msg.sender] -= amount;
-        _balances[to] += amount;
+        unchecked {
+            _balances[msg.sender] -= amount;
+            _balances[to] += amount;
+        }
         emit Transfer(msg.sender, to, amount);
         return true;
     }
