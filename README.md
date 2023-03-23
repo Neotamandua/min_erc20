@@ -36,9 +36,20 @@ forge test --match-contract gasTest --gas-report
 | src/erc20.sol:ERC20 contract |                 |       |        |       |         |
 |------------------------------|-----------------|-------|--------|-------|---------|
 | Deployment Cost              | Deployment Size |       |        |       |         |
-| 574065                       | 3679            |       |        |       |         |
+| 565252                       | 3635            |       |        |       |         |
 | Function Name                | min             | avg   | median | max   | calls   |
 | balanceOf                    | 2544            | 2544  | 2544   | 2544  | 2       |
 | standardTransfer             | 23162           | 25239 | 25162  | 29962 | 36      |
-| transfer                     | 23008           | 25085 | 25008  | 29808 | 36      |
+| transfer                     | 22818           | 24895 | 24818  | 29618 | 36      |
+
+forge test --match-contract gasTest --gas-report --optimize --optimizer-runs 3500
+
+| src/erc20.sol:ERC20 contract |                 |       |        |       |         |
+|------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost              | Deployment Size |       |        |       |         |
+| 645134                       | 4034            |       |        |       |         |
+| Function Name                | min             | avg   | median | max   | calls   |
+| balanceOf                    | 2543            | 2543  | 2543   | 2543  | 2       |
+| standardTransfer             | 23082           | 25159 | 25082  | 29882 | 36      |
+| transfer                     | 22750           | 24827 | 24750  | 29550 | 36      |
 ```

@@ -28,31 +28,51 @@ contract erc20Test is Test, SharedSetup {
         assertEq(TOKEN_NAME, erc20.name());
         assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender));
     }
+
+    function _transfer(address _receiver, uint256 amount) internal {
+        uint256 receiverBalanceBefore = erc20.balanceOf(_receiver);
+        erc20.transfer(_receiver, amount);
+        uint256 receiverBalanceAfter = erc20.balanceOf(_receiver);
+        assertEq(receiverBalanceAfter, receiverBalanceBefore + amount);
+        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+    }
+
+    function _standardTransfer(address _receiver, uint256 amount) internal {
+        uint256 receiverBalanceBefore = erc20.balanceOf(_receiver);
+        erc20.standardTransfer(_receiver, amount);
+        uint256 receiverBalanceAfter = erc20.balanceOf(_receiver);
+        assertEq(receiverBalanceAfter, receiverBalanceBefore + amount);
+        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+    }
     
     /// @dev Case 1: transfer with amount < balance
     function testTransferBelowBalance() public {
         uint256 amount = erc20.balanceOf(sender) / 2;
-        uint256 receiverBalanceBefore = erc20.balanceOf(receiver);
-        erc20.transfer(receiver, amount);
-        uint256 receiverBalanceAfter = erc20.balanceOf(receiver);
-        assertEq(receiverBalanceAfter, receiverBalanceBefore + amount);
-        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+        _transfer(receiver, amount);
+    }
+
+    /// @dev Case 1: standardTransfer with amount < balance
+    function testStandardTransferBelowBalance() public {
+        uint256 amount = erc20.balanceOf(sender) / 2;
+        _standardTransfer(receiver, amount);
     }
     
     /// @dev Case2: Transfer with amount = balance
     function testTransferMaxBalance() public {
         uint256 amount = erc20.balanceOf(sender);
-        uint256 receiverBalanceBefore = erc20.balanceOf(receiver);
-        erc20.transfer(receiver, amount);
-        uint256 receiverBalanceAfter = erc20.balanceOf(receiver);
-        assertEq(receiverBalanceAfter, receiverBalanceBefore + amount);
-        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+        _transfer(receiver, amount);
+    }
+
+    /// @dev Case2: standardTransfer with amount = balance
+    function testStandardTransferMaxBalance() public {
+        uint256 amount = erc20.balanceOf(sender);
+        _standardTransfer(receiver, amount);
     }
 
     /// @dev Case 3: Transfer with amount > balance, results in amount = balance
     function testTransferAboveBalance() public {   
         // prevent overflow with wrong config
-        erc20.transfer(receiver, 1*10**18);
+        _transfer(receiver, 1*10**18);
         // amount > balanceOf(msg.sender), can't overflow
         uint256 aboveMaxBalance = erc20.balanceOf(sender) + 1*10**18;
         uint256 actualMaxBalance = erc20.balanceOf(sender);
@@ -65,23 +85,29 @@ contract erc20Test is Test, SharedSetup {
         assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
     }
 
+    /// @dev Case 3: standardTransfer with amount > balance, should fail
+    function testStandardTransferAboveBalance() public {   
+        // prevent overflow with wrong config
+        _standardTransfer(receiver, 1*10**18);
+        // amount > balanceOf(msg.sender), can't overflow
+        uint256 aboveMaxBalance = erc20.balanceOf(sender) + 1*10**18;
+        // Case 3 Logic:
+        uint256 receiverBalanceBefore = erc20.balanceOf(receiver);
+        vm.expectRevert(bytes("balance too low"));
+        erc20.standardTransfer(receiver, aboveMaxBalance);
+        uint256 receiverBalanceAfter = erc20.balanceOf(receiver);
+        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+        assertEq(receiverBalanceBefore, receiverBalanceAfter);
+    }
 
     /// @dev fuzz test for standardTransfer:
     function testStandardTransfer(uint96 amount) public {
-        uint256 receiverBalanceBefore = erc20.balanceOf(receiver);
-        erc20.standardTransfer(receiver, amount);
-        uint256 receiverBalanceAfter = erc20.balanceOf(receiver);
-        assertEq(receiverBalanceAfter, receiverBalanceBefore + amount);
-        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+        _standardTransfer(receiver, amount);
     }
     
     /// @dev fuzz tests for transfer:
     function testTransfer(uint96 amount) public {
-        uint256 receiverBalanceBefore = erc20.balanceOf(receiver);
-        erc20.transfer(receiver, amount);
-        uint256 receiverBalanceAfter = erc20.balanceOf(receiver);
-        assertEq(receiverBalanceAfter, receiverBalanceBefore + amount);
-        assertEq(TOTAL_SUPPLY, erc20.balanceOf(sender) + receiverBalanceAfter);
+        _transfer(receiver, amount);
     }
 }
 
